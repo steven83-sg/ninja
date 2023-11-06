@@ -1,0 +1,38 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  fetch_secrets:
+    runs-on: ubuntu-latest
+    permissions:  # IMPORTANT - both of these are required
+      id-token: write
+      contents: read
+    name: Fetch some static secrets
+    steps:
+    - name: Fetch secrets from AKeyless
+      id: fetch-secrets
+      uses: LanceMcCarthy/akeyless-action@v3
+      with:
+        access-id: p-yiy9jzciaufnom     # (ex: 'p-iwt13fd19ajd') We recommend storing this as a GitHub Actions secret
+        static-secrets: '{"/ninja/gittest":"my_first_secret"}'
+        
+    - name: Use Outputs
+      run: |
+        echo "Step Outputs"
+        echo "my_first_secret: ${{ steps.fetch-secrets.outputs.my_first_secret }}"
+               
+        echo "Environment Variables"
+        echo "my_first_secret: ${{ env.my_first_secret }}"
